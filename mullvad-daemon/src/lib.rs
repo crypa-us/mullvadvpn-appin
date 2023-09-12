@@ -1644,14 +1644,15 @@ where
         };
 
         if new_state || new_state != settings.split_tunnel.enable_exclusions {
-            let tunnel_list = if new_state {
-                new_list.map(OsString::from).collect()
-            } else {
-                vec![]
-            };
+    let tunnel_list = if !new_state { // Changed this line
+        new_list.map(OsString::from).collect()
+    } else {
+        vec![]
+    };
 
-            let (result_tx, result_rx) = oneshot::channel();
-            self.send_tunnel_command(TunnelCommand::SetExcludedApps(result_tx, tunnel_list));
+    let (result_tx, result_rx) = oneshot::channel();
+    self.send_tunnel_command(TunnelCommand::SetExcludedApps(result_tx, tunnel_list));
+
             let daemon_tx = self.tx.clone();
 
             tokio::spawn(async move {
